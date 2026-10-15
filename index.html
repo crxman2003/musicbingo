@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Music Bingo Jumbotron</title>
+    <style>
+        body { background: #111; color: white; font-family: sans-serif; padding: 20px; }
+        h2 { color: #1DB954; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .song-row { display: flex; align-items: center; margin: 15px 0; background: #222; padding: 10px; border-radius: 8px; }
+        .song-row img { width: 60px; height: 60px; border-radius: 4px; margin-right: 15px; background: #333; }
+        .song-title { font-size: 1.2em; font-weight: bold; }
+        .badge { background: #333; padding: 5px 10px; border-radius: 4px; margin-right: 15px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <h2>LAST 5 SONGS PLAYED</h2>
+    <div id="board">Loading live stream updates...</div>
+
+    <script>
+        // REPLACE WITH YOUR FIREBASE URL (Keep the '/history.json' at the end)
+        const dbUrl = "https://firebaseio.com";
+
+        function fetchUpdates() {
+            fetch(dbUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data) return;
+                    let html = "";
+                    data.forEach((song, index) => {
+                        if (!song.title) return;
+                        html += `
+                            <div class="song-row">
+                                <span class="badge">Song ${index + 1}</span>
+                                <img src="${song.image || 'https://placehold.co'}" alt="Cover">
+                                <div class="song-title">${song.title}</div>
+                            </div>
+                        `;
+                    });
+                    document.getElementById("board").innerHTML = html;
+                });
+        }
+
+        // Check for new songs every 3 seconds
+        setInterval(fetchUpdates, 3000);
+        fetchUpdates();
+    </script>
+</body>
+</html>
